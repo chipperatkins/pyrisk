@@ -124,7 +124,7 @@ class AI(object):
         """
         raise NotImplementedError
     
-    def attack(self):
+    def attack(self,idx=0):
         """
         Combat stage of a turn.
 

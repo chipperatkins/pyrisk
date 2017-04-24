@@ -2,9 +2,7 @@ from ai import AI
 import collections
 import random
 
-class ClusterAI(AI):
-
-    possibleAttacks = []
+class NoloopAI(AI):
 
     def initial_placement(self, empty, remaining):
         if empty:
@@ -13,25 +11,25 @@ class ClusterAI(AI):
             t = random.choice(list(self.player.territories))
             return t
 
-    def continueAttack(self):
+    '''def continueAttack(self):
         l = []
         for t,a in self.getAttacks():
             l.append([t,a])
+        #print(l)
+        #print(len(l))
         if len(l) > 0:
             return True
-        else: return False
+        else: return False'''
 
-    def getAttacks(self, caller=1):   
+    def getAttacks(self):   
         for t in self.player.territories:
             for a in t.connect:
                 if a.owner != self.player:
                     prob, satk, sdef = self.simulate(t.forces, a.forces)
-                    if prob > 0.66 and caller == 0:
+                    if prob > 0.5:
                         yield (t, a)
-                    elif prob > 0.5 and caller != 0:
-			yield (t,a)
-
-    def attack(self,idx):
+    
+    def attack(self, idx=0):
         for t,a in self.getAttacks(): #calling getAttacks twice, once here once in continue !!!
             yield (t,a,None,None)
 

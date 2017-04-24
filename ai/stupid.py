@@ -14,7 +14,7 @@ class StupidAI(AI):
             t = random.choice(list(self.player.territories))
             return t
 
-    def attack(self):
+    def attack(self, idx=0):
         for t in self.player.territories:
             for a in t.connect:
                 if a.owner != self.player:
