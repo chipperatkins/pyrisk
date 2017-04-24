@@ -14,26 +14,39 @@ class ClusterAI(AI):
             return t
 
     def continueAttack(self):
-        l = []
-        for t,a in self.getAttacks():
-            l.append([t,a])
-        if len(l) > 0:
+        l = self.getAttacks()
+        if l != []:
             return True
-        else: return False
+        else:
+            return False
 
     def getAttacks(self, caller=1):   #delete caller if needed
+        targets = []
         for t in self.player.territories:
             for a in t.connect:
                 if a.owner != self.player:
                     prob, satk, sdef = self.simulate(t.forces, a.forces)
                     if prob > 0.66 and caller == 0:
-                        yield (t, a)
+                        targets.append([prob,t,a])
                     elif prob > 0.5 and caller != 0:
-			yield (t,a)
+                        targets.append([prob,t,a])
+        targets.sort(reverse=True)
+        return targets
 
-    def attack(self,idx):
-        for t,a in self.getAttacks(): #calling getAttacks twice, once here once in continue !!!
-            yield (t,a,None,None)
+    numAttacks = 0
+    def haltAttack(self,atk, dfn):
+        if self.numAttacks == 0:
+            self.numAttacks += 1
+            return True
+        else:
+            self.numAttacks = 0
+            return False
+
+    def attack(self,idx): #remove index
+        targets = self.getAttacks() # calling get attacks twice here and continueAttack, fix!!
+        if targets != []:
+            return [[targets[0][1],targets[0][2],self.haltAttack, None]]
+        else: return [(None, None, None, None)]
 
     def reinforce(self, available):
         border = [t for t in self.player.territories if t.border]
