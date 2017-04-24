@@ -3,7 +3,7 @@ import random
 from collections import defaultdict
 from copy import deepcopy
 
-class ChronAI(AI):
+class ChronClusterAI(AI):
     def pathfind(self, src, dest, forces=True, hostile=True):
         open_set = {c for c in src.connect if c.owner != self.player or not hostile}
         parent = {o: src for o in open_set}
@@ -414,7 +414,7 @@ class ChronAI(AI):
         self.loginfo("reinforce: final distribution %s, plans %s", result, self.plans)
         return result
 
-    def attack(self, idx=0):
+    """def attack(self, idx=0):
         for plan in self.plans:
             self.loginfo("attack: executing plan %s", plan)
             for i in range(len(plan)-1):
@@ -426,7 +426,7 @@ class ChronAI(AI):
                     prob, s_atk, s_def = self.simulate(t.forces, a.forces)
                     if prob > self.priority['attack-any']:
                         self.loginfo("attack: attack-any %s -> %s", t, a)
-                        yield (t, a, None, lambda x: 1)
+                        yield (t, a, None, lambda x: 1)"""
 
     def freemove(self):
         borders = [t for t in self.player.territories if t.border]
@@ -436,13 +436,13 @@ class ChronAI(AI):
             src = sorted(inlands, key=lambda x: x.forces)[-1]
             return (src, dest, src.forces - 1)
 
-    """def continueAttack(self):
+    def continueAttack(self):
         l = []
         for t,a in self.getAttacks():
             l.append([t,a])
         if len(l) > 0:
             return True
-        else: return False"""
+        else: return False
 
     def getAttacks(self, caller=1):   #delete caller if needed
         for t in self.player.territories:
@@ -454,7 +454,7 @@ class ChronAI(AI):
                     elif prob > 0.5 and caller != 0:
 			yield (t,a)
 
-    """def attack(self,idx):
+    def attack(self,idx):
         for t,a in self.getAttacks(): #calling getAttacks twice, once here once in continue !!!
-            yield (t,a,None,None)"""
+            yield (t,a,None,None)
 
