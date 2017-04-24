@@ -11,22 +11,26 @@ class ClusterAI(AI):
             t = random.choice(list(self.player.territories))
             return t
 
-    """def continueAttack(self):
-        if self.attack():
+    def continueAttack(self):
+        l = []
+        for t,a in self.getAttacks():
+            l.append([t,a])
+        #print(l)
+        #print(len(l))
+        if len(l) > 0:
             return True
-        else: return False"""
+        else: return False
 
     def getAttacks(self):   
         for t in self.player.territories:
             for a in t.connect:
                 if a.owner != self.player:
                     prob, satk, sdef = self.simulate(t.forces, a.forces)
-                    #if t.forces > a.forces:
-                    if prob > 0.50:
+                    if prob > 0.5:
                         yield (t, a)
     
     def attack(self):
-        for t,a in self.getAttacks():
+        for t,a in self.getAttacks(): #calling getAttacks twice, once here once in continue !!!
             yield (t,a,None,None)
 
     def reinforce(self, available):
