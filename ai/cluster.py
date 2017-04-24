@@ -21,7 +21,7 @@ class ClusterAI(AI):
             return True
         else: return False
 
-    def getAttacks(self, caller=1):   
+    def getAttacks(self, caller=1):   #delete caller if needed
         for t in self.player.territories:
             for a in t.connect:
                 if a.owner != self.player:

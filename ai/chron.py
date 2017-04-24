@@ -414,7 +414,7 @@ class ChronAI(AI):
         self.loginfo("reinforce: final distribution %s, plans %s", result, self.plans)
         return result
 
-    def attack(self):
+    def attack(self, idx=0):
         for plan in self.plans:
             self.loginfo("attack: executing plan %s", plan)
             for i in range(len(plan)-1):
@@ -437,4 +437,24 @@ class ChronAI(AI):
             return (src, dest, src.forces - 1)
 
     def continueAttack(self):
-        return False
+        l = []
+        for t,a in self.getAttacks():
+            l.append([t,a])
+        if len(l) > 0:
+            return True
+        else: return False
+
+    def getAttacks(self, caller=1):   #delete caller if needed
+        for t in self.player.territories:
+            for a in t.connect:
+                if a.owner != self.player:
+                    prob, satk, sdef = self.simulate(t.forces, a.forces)
+                    if prob > 0.66 and caller == 0:
+                        yield (t, a)
+                    elif prob > 0.5 and caller != 0:
+			yield (t,a)
+
+    """def attack(self,idx):
+        for t,a in self.getAttacks(): #calling getAttacks twice, once here once in continue !!!
+            yield (t,a,None,None)"""
+
