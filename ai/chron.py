@@ -435,3 +435,6 @@ class ChronAI(AI):
             dest = sorted(borders, key=lambda x: x.forces)[0]
             src = sorted(inlands, key=lambda x: x.forces)[-1]
             return (src, dest, src.forces - 1)
+
+    def continueAttack(self):
+        return False

@@ -146,3 +146,10 @@ class AI(object):
         objects or names, or None to skip this part of the turn.
         """
         return None
+    def continueAttack(self):
+        """
+        Allows incremental attack in game.py
+
+        Returns true or false, for if the ai is ready to end the attack phase.
+        """
+        return False
