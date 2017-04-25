@@ -47,17 +47,16 @@ class ClusterMoveAI(AI):
     def attack(self,idx): #remove index
         targets = self.getAttacks() # calling get attacks twice here and continueAttack, fix!!
         maxI = 0
-        atk = 0
         if targets != []:
             src = targets[0][1]
             dest = targets[0][2]
-            '''for prob,t,a,satk,sdef in targets: #dont loop through all
+            for prob,t,a,satk,sdef in targets: #dont loop through all
                 tmp = self.heuristic(t,a,satk) 
                 if tmp + (prob * 1000) > maxI:
                     maxI = tmp
                     src = t
-                    dest = a'''
-            return [[src,dest,self.haltAttack,self.moveTroops]]
+                    dest = a
+            return [[src,dest,self.haltAttack,None]]
             #return [[targets[0][1],targets[0][2],self.haltAttack, None]]
         else: return [(None, None, None, None)]
 
