@@ -85,12 +85,6 @@ class AlClusterAI(AI):
         if targets != []:
             src = targets[0][1]
             dest = targets[0][2]
-            '''for prob,t,a,satk,sdef in targets: #dont loop through all
-                tmp = self.heuristic(t,a,satk) 
-                if tmp + (prob * 1000) > maxI:
-                    maxI = tmp
-                    src = t
-                    dest = a'''
             return [[src,dest,self.haltAttack,None]]
             #return [[targets[0][1],targets[0][2],self.haltAttack, None]]
         else: return [(None, None, None, None)]

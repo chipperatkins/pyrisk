@@ -47,6 +47,7 @@ class ClusterMoveAI(AI):
     def attack(self,idx): #remove index
         targets = self.getAttacks() # calling get attacks twice here and continueAttack, fix!!
         maxI = 0
+        atk = 0
         if targets != []:
             src = targets[0][1]
             dest = targets[0][2]
@@ -72,35 +73,6 @@ class ClusterMoveAI(AI):
     """
     NEW Code STARTS HERE
     """
-    def heuristic(self, src, tgt, a_survive):
-        """ 
-        This is a heuristic function defining the clusterer's behavior.
-        The clusterer attempts to spread its influence from its strong borders. 
-        It favors attacking territories that will reduce the enemy:owned troop ratio. 
-        It will also favor taking nodes that it is likely to be able to capture.
-        This behavior allows it to continue taking nodes even when taking a node might reduce
-        the overall strength ratio of its border because it reduces the number of states on the border
-        and also helps in projecting power.
-        """
-        toy = deepcopy(self.world)
-        toy_players = set(t.owner for t in toy.territories.values())
-        toy_us = toy.territories[src.name].owner
-	
-        numTroops = self.moveTroops(src.forces, src, tgt)
-	toy.territories[src.name].forces = a_survive - numTroops
-	
-	toy.territories[tgt.name].forces = numTroops
-	toy.territories[tgt.name].owner = toy_us
-	a_border = [t for t in toy_us.territories if t.border]
-	d_border = []
-	for t in a_border:
-	    for c in t.connect:
-	        if t.owner != c.owner and c not in d_border:
-	            d_border.append(c)
-	a_border_force = sum(a.forces for a in a_border)
-	d_border_force = sum(d.forces for d in d_border)
-		
-	return a_border_force - d_border_force
     def moveTroops(self, n_atk, source, target):
 	""" 
 	Moves troops under these conditions:
@@ -127,3 +99,28 @@ class ClusterMoveAI(AI):
 	    return True
         else:
 	    return False
+
+    def heuristic(self, src, tgt, a_survive):
+	temp_src_force = src.forces
+	temp_src_owner = src.owner
+	temp_tgt_force = tgt.forces
+	temp_tgt_owner = tgt.owner
+	tgt.owner = src.owner
+	src.forces = a_survive
+	tgt.forces = self.moveTroops(src.forces,src, tgt)
+	src.forces = a_survive - self.moveTroops(src.forces,src, tgt)
+	a_border = [t for t in temp_src_owner.territories if t.border]
+	d_border = []
+	for t in a_border:
+	        for c in t.connect:
+	                if t.owner != c.owner and c not in d_border:
+	                        d_border.append(c)
+	a_border_force = sum(a.forces for a in a_border)
+	d_border_force = sum(d.forces for d in d_border)
+
+	src.forces = temp_src_force
+	src.owner  = temp_src_owner
+	tgt.forces = temp_tgt_force
+	tgt.owner  = temp_tgt_owner
+	return a_border_force - d_border_force
+
