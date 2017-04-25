@@ -1,0 +1,8 @@
+Outcome of 5 games
+ALPHA [StupidAI]:	1
+DELTA [StupidAI]:	1
+BRAVO [ClusterAI]:	3
+Outcome of 5 games
+CHARLIE [StupidAI]:	1
+BRAVO [ClusterAI]:	2
+ALPHA [StupidAI]:	2
