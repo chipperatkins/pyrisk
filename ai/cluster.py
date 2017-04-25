@@ -2,6 +2,7 @@ from ai import AI
 import random
 import collections
 from copy import deepcopy
+from time import sleep
 
 
 class ClusterAI(AI):
@@ -20,7 +21,9 @@ class ClusterAI(AI):
         for t in self.player.territories:
             for a in t.connect:
                 if a.owner != self.player:
-                    if t.forces > a.forces:
+		    p, a_survive, d = self.simulate(t.forces,a.forces)
+		    h = self.heuristic(t,a,int(a_survive))
+                    if t.forces  > a.forces + h :
                         yield (t, a, None, None)
 
     def reinforce(self, available):
@@ -32,49 +35,37 @@ class ClusterAI(AI):
         return result
 
     def heuristic(self, src, tgt, a_survive):
-        	""" 
-        This is a heuristic function defining the clusterer's behavior.
-        The clusterer attempts to spread its influence from its strong borders. 
-        It favors attacking territories that will reduce the enemy:owned troop ratio. 
-        It will also favor taking nodes that it is likely to be able to capture.
-        This behavior allows it to continue taking nodes even when taking a node might reduce
-        the overall strength ratio of its border because it reduces the number of states on the border
-        and also helps in projecting power.
-        	"""
-# create toy world for simulation
-	        toy = deepcopy(self.world)
-	        toy_players = set(t.owner for t in toy.territories.values())
-	        toy_us = toy.territories[src.name].owner
-#		print "Here is toy_us:"
-#		print toy_us
-	
-	        numTroops = self.moveTroops(src, tgt)
-	        toy.territories[src.name].forces = a_survive - numTroops
-	
-	# change ownership of target territory
-	        toy.territories[tgt.name].forces = numTroops
-	        toy.territories[tgt.name].owner = toy_us
-	# find attacking and defending borders
-		a_border = [t for t in toy_us.territories if t.border]
-#		for t in toy_us.territories: print t.owner
+# cluster heuristic
+
+# store local state
+		temp_src_force = src.forces
+		temp_src_owner = src.owner
+		temp_tgt_force = tgt.forces
+		temp_tgt_owner = tgt.owner
+
+# update local state to t+1
+		tgt.owner = src.owner
+		src.forces = a_survive
+		tgt.forces = self.moveTroops(src, tgt)
+		src.forces = a_survive - self.moveTroops(src, tgt)
+
+# find attacking and defending borders
+		a_border = [t for t in temp_src_owner.territories if t.border]
 	        d_border = []
 	        for t in a_border:
 	                for c in t.connect:
 	                        if t.owner != c.owner and c not in d_border:
 	                                d_border.append(c)
+
 	# sum forces on borders
 	        a_border_force = sum(a.forces for a in a_border)
 	        d_border_force = sum(d.forces for d in d_border)
-		
-#		print "A border: " 
-#		print a_border
-#		print "D border: " 
-#		print d_border
-#		print "A force: " 
-#		print a_border_force
-#		print "D force: "
-#		print d_border_force 
+
 	# return difference of attacking and defending borders
+		src.forces = temp_src_force
+		src.owner  = temp_src_owner
+		tgt.forces = temp_tgt_force
+		tgt.owner  = temp_tgt_owner
 	        return a_border_force - d_border_force
 	
     def moveTroops(self, source, target):
