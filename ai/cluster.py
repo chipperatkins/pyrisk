@@ -3,7 +3,7 @@ import random
 import collections
 from copy import deepcopy
 from time import sleep
-
+import operator
 
 class ClusterAI(AI):
     """
@@ -11,11 +11,38 @@ class ClusterAI(AI):
     territories, and attacking wherever it can without any considerations of wisdom.
     """
     def initial_placement(self, empty, remaining):
-        if empty:
-            return random.choice(empty)
-        else:
-            t = random.choice(list(self.player.territories))
-            return t
+
+	if not empty:	
+		hold = []
+		for t in self.player.territories:
+			hold = [j for j in t.connect if j.owner == None]
+		terrHeur = {}
+		for t in hold:
+		    terrHeur[t] = self.initHeuristic(t)
+		if not terrHeur:
+			choice = []
+			for j in self.player.territories:
+				choice += [j]
+			return random.choice(choice).name
+		return max(terrHeur.iteritems(), key=operator.itemgetter(1))[0]
+
+	if not (self.player.territories):
+		return random.choice(empty)
+		
+	territories = set(self.player.territories)
+	nearby = set()
+
+	for t in territories:
+		hold = [j for j in t.connect if j.owner == None]
+		for h in hold:
+		    if h not in nearby:
+		    	nearby.add(h)
+	terrHeur = {}
+	for t in nearby:
+	    terrHeur[t] = self.initHeuristic(t)
+	if not terrHeur:
+		return random.choice(empty)
+	return max(terrHeur.iteritems(), key=operator.itemgetter(1))[0]
 
     def attack(self):
         for t in self.player.territories:
@@ -23,7 +50,7 @@ class ClusterAI(AI):
                 if a.owner != self.player:
 		    p, a_survive, d = self.simulate(t.forces,a.forces)
 		    h = self.heuristic(t,a,int(a_survive))
-                    if t.forces  > a.forces + h :
+                    if h > 0 or p > .6:
                         yield (t, a, None, None)
 
     def reinforce(self, available):
@@ -98,3 +125,31 @@ class ClusterAI(AI):
 	        else:
 	                return False
 	                
+
+    def initHeuristic(self, src):
+# cluster heuristic
+
+# store local state
+		temp_src_force = src.forces
+		src.owner      = self.player
+
+# update local state to t+1
+		src.forces += 1
+
+# find attacking and defending borders
+		a_border = [t for t in src.owner.territories if t.border]
+	        d_border = []
+	        for t in a_border:
+	                for c in t.connect:
+	                        if t.owner != c.owner and c not in d_border:
+	                                d_border.append(c)
+
+	# sum forces on borders
+	        a_border_force = sum(a.forces for a in a_border)
+	        d_border_force = sum(d.forces for d in d_border)
+
+	# return difference of attacking and defending borders
+		src.forces = temp_src_force
+		src.owner = None
+	        return a_border_force - d_border_force
+	
