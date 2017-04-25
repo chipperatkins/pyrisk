@@ -29,7 +29,7 @@ class ClusterAI(AI):
                     if prob > 0.66 and caller == 0:
                         targets.append([prob,t,a])
                     elif prob > 0.5 and caller != 0:
-                        targets.append([prob,t,a])
+                        targets.append([prob,t,a,satk,sdef])
         targets.sort(reverse=True)
         return targets
 
