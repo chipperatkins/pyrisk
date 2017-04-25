@@ -2,7 +2,7 @@ from ai import AI
 from collections import defaultdict
 import random
 
-class AlAI(AI):
+class AlClusterAI(AI):
     """
     AlAI: Somewhat like BetterAI, but with a fixed priority order.
     """
