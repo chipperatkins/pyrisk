@@ -175,7 +175,7 @@ class Game(object):
         if f_atk is None:
             f_atk = lambda a, d: True
         if f_move is None:
-            f_move = lambda a: a - 1
+            f_move = lambda a,s,d: a - 1
 
         while n_atk > 1 and n_def > 0 and f_atk(n_atk, n_def):
             atk_dice = min(n_atk - 1, 3)
@@ -190,7 +190,7 @@ class Game(object):
                     n_atk -= 1
         
         if n_def == 0:
-            move = f_move(n_atk)
+            move = f_move(n_atk,src,target)
             min_move = min(n_atk - 1, 3)
             max_move = n_atk - 1
             if move < min_move:

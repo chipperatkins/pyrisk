@@ -246,7 +246,6 @@ class ChronAI(AI):
         result['enemy-reinforcements'] = sum(p.reinforcements for p in toy_players if p != toy_us) - sum(p.reinforcements for p in self.game.players.values() if p != self.player)
         old_border = set(t.name for t in self.player.territories if t.border)
         new_border = set(t.name for t in toy_us.territories if t.border)
-        print(new_border)
         
         #set of territory *names*
         result['new-borders'] = new_border - old_border
@@ -427,7 +426,7 @@ class ChronAI(AI):
                     prob, s_atk, s_def = self.simulate(t.forces, a.forces)
                     if prob > self.priority['attack-any']:
                         self.loginfo("attack: attack-any %s -> %s", t, a)
-                        yield (t, a, None, lambda x: 1)
+                        yield (t, a, None, lambda x, y, z: 1)
 
     def freemove(self):
         borders = [t for t in self.player.territories if t.border]

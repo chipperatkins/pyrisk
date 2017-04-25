@@ -4,7 +4,7 @@ import random
 import collections
 from copy import deepcopy
 
-class ClusterAI(AI):
+class ClusterMoveAI(AI):
 
     possibleAttacks = []
 
@@ -57,7 +57,7 @@ class ClusterAI(AI):
                     maxI = tmp
                     src = t
                     dest = a'''
-            return [[src,dest,self.haltAttack,None]]
+            return [[src,dest,self.haltAttack,self.moveTroops]]
             #return [[targets[0][1],targets[0][2],self.haltAttack, None]]
         else: return [(None, None, None, None)]
 
