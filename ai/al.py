@@ -41,7 +41,7 @@ class AlAI(AI):
         result[priority[0]] += remain
         return result
 
-    def attack(self):
+    def attack(self,idx):
         can_attack = True
         while can_attack:
             can_attack = False
